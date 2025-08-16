@@ -27,6 +27,17 @@ class Ticket {
 
 class Zahlstation {
     private final double preisProMinute;
+    public Zahlstation(double preisProMinute) { this.preisProMinute = preisProMinute; }
+
+    public double berechnen(Ticket t) {
+        Duration d = t.dauerBis(LocalDateTime.now());
+        long minuten = Math.max(1, (d.toSeconds() + 59) / 60); // aufrunden mind. 1 Minute
+        return minuten * preisProMinute;
+    }
+
+    public void bezahlen(Ticket t) {
+        t.bezahlen();
+    }
 }
 
 class Schranke {
