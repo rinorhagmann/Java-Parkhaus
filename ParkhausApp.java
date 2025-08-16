@@ -3,23 +3,89 @@ import java.util.*;
 
 public class ParkhausApp {
     public static void main(String[] args) {
-        Parkhaus parkhaus = new Parkhaus("Zentrum", 10, 0.05); // 5 Cent pro Minute
+        Parkhaus parkhaus = new Parkhaus("Zentrum", 10, 0.05); 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Willkommen im Parkaus\n");
+        System.out.println("Willkommen im Parkhaus\n");
+        boolean running = true;
+        while (running) {
+            System.out.println("--- Menü ---");
+            System.out.println("1) Einfahren (Ticket ziehen)");
+            System.out.println("2) Bezahlen");
+            System.out.println("3) Ausfahren");
+            System.out.println("4) Freie Plätze anzeigen");
+            System.out.println("0) Beenden");
+            System.out.print("> ");
+            String input = sc.nextLine().trim();
+            switch (input) {
+                case "1":
+                    Ticket t = parkhaus.ticketAusgeben();
+                    if (t != null) {
+                        System.out.println("Ticket ausgegeben: ID " + t.getId());
+                        parkhaus.getEinfahrt().öffnen();
+                    } else {
+                        System.out.println("Parkhaus voll – kein Ticket verfügbar.");
+                    }
+                    break;
+                case "2":
+                    System.out.print("Ticket-ID: ");
+                    String idPay = sc.nextLine().trim();
+                    Ticket payT = parkhaus.findeTicket(idPay);
+                    if (payT == null) {
+                        System.out.println("Unbekannte Ticket-ID.");
+                        break;
+                    }
+                    double betrag = parkhaus.getZahlstation().berechnen(payT);
+                    System.out.printf("Zu zahlen: %.2f CHF\n", betrag);
+                    System.out.print("Jetzt bezahlen? (j/n) ");
+                    if (sc.nextLine().trim().equalsIgnoreCase("j")) {
+                        parkhaus.getZahlstation().bezahlen(payT);
+                        parkhaus.zahlungRegistrieren(payT);
+                        System.out.println("Bezahlt. Quittung: Ticket " + payT.getId());
+                    }
+                    break;
+                case "3":
+                    System.out.print("Ticket-ID: ");
+                    String idExit = sc.nextLine().trim();
+                    Ticket exitT = parkhaus.findeTicket(idExit);
+                    if (exitT == null) {
+                        System.out.println("Unbekannte Ticket-ID.");
+                        break;
+                    }
+                    if (exitT.isBezahlt()) {
+                        parkhaus.getAusfahrt().öffnen();
+                        parkhaus.ticketBeenden(exitT); 
+                        System.out.println("Gute Fahrt!");
+                    } else {
+                        System.out.println("Bitte zuerst bezahlen!");
+                    }
+                    break;
+                case "4":
+                    parkhaus.getAnzeige().anzeigen(parkhaus.getFreiePlätze());
+                    break;
+                case "0":
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Ungültige Eingabe.");
+            }
+            System.out.println();
+        }
     }
 }
+
 
 class Parkhaus {
     private final String name;
     private final int kapazität;
     private int freiePlätze;
     private final Map<String, Ticket> tickets = new HashMap<>();
-    private int nextId = 1; // Ticket-ID von 1 bis kapazität
+    private int nextId = 1; 
+
     private final Anzeigetafel anzeige = new Anzeigetafel();
     private final Schranke einfahrt = new Schranke("Einfahrt");
     private final Schranke ausfahrt = new Schranke("Ausfahrt");
-    private final Zahlstation zahlstation; // Minutenpreis
+    private final Zahlstation zahlstation; 
 
     public Parkhaus(String name, int kapazität, double minutenPreis) {
         this.name = name;
@@ -39,7 +105,7 @@ class Parkhaus {
     }
 
     public void zahlungRegistrieren(Ticket t) {
-        // Markierung passiert in Ticket/ Zahlstation, hier könnten Logs/Statistiken stehen
+        
     }
 
     public void ticketBeenden(Ticket t) {
@@ -62,7 +128,7 @@ class Parkhaus {
 class Ticket {
     private final String id;
     private final LocalDateTime start;
-    private LocalDateTime ende; // gesetzt beim Bezahlen
+    private LocalDateTime ende; 
     private boolean bezahlt;
 
     private Ticket(String id) {
@@ -89,12 +155,13 @@ class Ticket {
 }
 
 class Zahlstation {
-    private final double preisProMinute;
+    private final double preisProMinute; 
+
     public Zahlstation(double preisProMinute) { this.preisProMinute = preisProMinute; }
 
     public double berechnen(Ticket t) {
         Duration d = t.dauerBis(LocalDateTime.now());
-        long minuten = Math.max(1, (d.toSeconds() + 59) / 60); // aufrunden mind. 1 Minute
+        long minuten = Math.max(1, (d.toSeconds() + 59) / 60); 
         return minuten * preisProMinute;
     }
 
@@ -112,7 +179,7 @@ class Schranke {
 }
 
 class Anzeigetafel {
-     public void anzeigen(int freie) {
+    public void anzeigen(int freie) {
         System.out.println("Freie Plätze: " + freie);
     }
 }
