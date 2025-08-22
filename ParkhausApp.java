@@ -79,7 +79,7 @@ public class ParkhausApp {
 }
 
 // OOP: Klasse Parkhaus
-// SOLID: Single Responsibility Principle
+// SOLID: Single Responsibility Principle (hat nur eine Aufgabe: Parkhaus verwalten)
 class Parkhaus {
     private final String name;           // Name des Parkhauses
     private final int kapazität;         // Maximale Plätze
@@ -87,7 +87,7 @@ class Parkhaus {
     private final Map<String, Ticket> tickets = new HashMap<>(); // Ticketverwaltung (verwendet Bibliothek HashMap für schnelle Suche)
     private int nextId = 1;              // Nächste Ticket-ID
 
-    // Zusammensetzung: Parkhaus besitzt andere Objekte
+    // Objekte
     private final Anzeigetafel anzeige = new Anzeigetafel(); // Anzeigetafel für freie Plätze
     private final Schranke einfahrt = new Schranke("Einfahrt"); // Schranke mit Name einfahrt
     private final Schranke ausfahrt = new Schranke("Ausfahrt"); // Schranke mit Name ausfahrt
@@ -151,7 +151,7 @@ class Ticket {
         this.bezahlt = false; // nicht bezahlt
     }
 
-    // Fabrikmethode: Ticket erzeugen
+    // Ticket erzeugen
     public static Ticket neu(String id) { return new Ticket(id); } // neues Ticket mit ID
 
     // Methoden zum Status ändern
@@ -169,8 +169,8 @@ class Ticket {
     public LocalDateTime getStart() { return start; } // Startzeit des Tickets
 }
 
-// OOP: Klasse Zahlstation – Zahlungslogik
-// SOLID: SRP – nur Berechnung und Zahlung
+// OOP: Klasse Zahlstation
+// SOLID: Single Responsibility Principle
 class Zahlstation {
     private final double preisProMinute; // Preis pro Minute
     public Zahlstation(double preisProMinute) { this.preisProMinute = preisProMinute; } // Konstruktor
@@ -186,16 +186,16 @@ class Zahlstation {
     public void bezahlen(Ticket t) { t.bezahlen(); }
 }
 
-// OOP: Klasse Schranke – Schrankensteuerung
-// SOLID: SRP – nur Öffnen
+// OOP: Klasse Schranke
+// SOLID: Single Responsibility Principle
 class Schranke {
     private final String name; // Name der Schranke
     public Schranke(String name) { this.name = name; } // Konstruktor mit Name
     public void öffnen() { System.out.println("Schranke (" + name + ") öffnet."); } // Schranke öffnen
 }
 
-// OOP: Klasse Anzeigetafel – Platzanzeige
-// SOLID: SRP – nur Anzeige
+// OOP: Klasse Anzeigetafel
+// SOLID: Single Responsibility Principle
 class Anzeigetafel {
     public void anzeigen(int freie) {
         System.out.println("Freie Plätze: " + freie); // Anzeige der freien Plätze
